@@ -1,19 +1,20 @@
 # React auth boilerplate
 
-**#Router #Auth #ReduxToolkit #HookForm**
+**#Router #Auth #ReactQuery #ReactHookForm**
 
 ### Include :
 
 ---
 
 - Router
-- Authentification system
-- Redux global state
+- Authentication system
+- Authentication context
 
 ### Packages :
 
 ---
 
 - react router
+- axios
 - react hook form
-- redux toolkit
+- react query (tanstack)
