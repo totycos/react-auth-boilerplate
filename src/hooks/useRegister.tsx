@@ -1,13 +1,20 @@
 import { useMutation } from "@tanstack/react-query";
-import { useContext } from "react";
-import { AuthContext } from "../contexts/AuthContext";
 import axiosInstance from "../utils/axiosInstance";
+import { useAuthContext } from "../contexts/AuthContext";
+
+type RegisterData = {
+  user: {
+    email: string;
+    password: string;
+  };
+};
 
 const useRegister = () => {
-  const { login } = useContext(AuthContext);
+  const { login } = useAuthContext();
 
   return useMutation({
-    mutationFn: (credentials) => axiosInstance.post("users/", credentials),
+    mutationFn: (credentials: RegisterData) =>
+      axiosInstance.post("users/", credentials),
     onSuccess: (response) => {
       console.log("response:", response);
       const token = response.headers.authorization;

@@ -1,20 +1,24 @@
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import useForgotPassword from "../hooks/useForgotPassword";
+
+type ForgotPasswordFormInputs = {
+  email: string;
+};
 
 const ForgotPasswordForm = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm<ForgotPasswordFormInputs>();
   const {
     mutate: forgotPassword,
-    isLoading,
+    isPending,
     isError,
     error,
   } = useForgotPassword();
 
-  const onSubmit = async (data) => {
+  const onSubmit: SubmitHandler<ForgotPasswordFormInputs> = async (data) => {
     const filteredData = {
       user: {
         email: data.email,
@@ -46,7 +50,7 @@ const ForgotPasswordForm = () => {
           <p>{errors.email.message}</p>
         )}
 
-        <input type="submit" disabled={isLoading} />
+        <input type="submit" disabled={isPending} />
       </form>
       {isError && <p>Reset password failed: {error.message}</p>}
     </div>

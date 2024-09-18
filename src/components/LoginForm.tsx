@@ -1,21 +1,25 @@
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import useRegister from "../hooks/useRegister";
+import useLogin from "../hooks/useLogin";
 import { useAuthContext } from "../contexts/AuthContext";
 
-const RegisterForm = () => {
+type LoginFormInputs = {
+  email: string;
+  password: string;
+};
+
+const LoginForm = () => {
   const {
     register,
     handleSubmit,
-    getValues,
     formState: { errors },
-  } = useForm();
-  const { mutate: registerUser, isLoading, isError, error } = useRegister();
+  } = useForm<LoginFormInputs>();
+  const { mutate: loginUser, isPending, isError, error } = useLogin();
   const { isAuthenticated } = useAuthContext();
   const navigate = useNavigate();
 
-  const onSubmit = (data) => {
+  const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     const filteredData = {
       user: {
         email: data.email,
@@ -23,7 +27,7 @@ const RegisterForm = () => {
       },
     };
 
-    registerUser(filteredData);
+    loginUser(filteredData);
   };
 
   useEffect(() => {
@@ -33,7 +37,7 @@ const RegisterForm = () => {
   }, [isAuthenticated, navigate]);
 
   return (
-    <div className="registerForm">
+    <div className="loginForm">
       <form onSubmit={handleSubmit(onSubmit)}>
         <input
           type="email"
@@ -70,24 +74,11 @@ const RegisterForm = () => {
           <p>Password should have 6 characters minimum</p>
         )}
 
-        <input
-          type="password"
-          {...register("passwordConfirmation", {
-            validate: (value) =>
-              value === getValues("password") || "The passwords do not match",
-          })}
-          placeholder="Confirm Password here"
-          autoComplete="current-password"
-        />
-        {errors.passwordConfirmation && (
-          <p>{errors.passwordConfirmation.message}</p>
-        )}
-
-        <input type="submit" disabled={isLoading} />
+        <input type="submit" disabled={isPending} />
       </form>
-      {isError && <p>Registration failed: {error.message}</p>}
+      {isError && <p>Login failed: {error.message}</p>}
     </div>
   );
 };
 
-export default RegisterForm;
+export default LoginForm;

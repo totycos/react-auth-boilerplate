@@ -1,5 +1,10 @@
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import useResetPassword from "../hooks/useResetPassword";
+
+type ResetPasswordFormInputs = {
+  password: string;
+  passwordConfirmation: string;
+};
 
 const ResetPasswordForm = () => {
   const {
@@ -7,10 +12,10 @@ const ResetPasswordForm = () => {
     handleSubmit,
     formState: { errors },
     getValues,
-  } = useForm();
+  } = useForm<ResetPasswordFormInputs>();
   const {
     mutate: resetPassword,
-    isLoading,
+    isPending,
     isError,
     error,
   } = useResetPassword();
@@ -18,7 +23,9 @@ const ResetPasswordForm = () => {
     "reset_token"
   );
 
-  const onSubmit = async (data) => {
+  const onSubmit: SubmitHandler<ResetPasswordFormInputs> = async (data) => {
+    if (!resetToken) throw new Error("Reset token not found");
+
     const filteredData = {
       user: {
         reset_password_token: resetToken,
@@ -62,7 +69,7 @@ const ResetPasswordForm = () => {
           <p>{errors.passwordConfirmation.message}</p>
         )}
 
-        <input type="submit" disabled={isLoading} />
+        <input type="submit" disabled={isPending} />
       </form>
       {isError && <p>Reset password failed: {error.message}</p>}
     </div>

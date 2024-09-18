@@ -1,9 +1,15 @@
 import { useMutation } from "@tanstack/react-query";
 import axiosInstance from "../utils/axiosInstance";
 
+type ForgotPasswordData = {
+  user: {
+    email: string;
+  };
+};
+
 const useForgotPassword = () => {
   return useMutation({
-    mutationFn: (credentials) =>
+    mutationFn: (credentials: ForgotPasswordData) =>
       axiosInstance.post("users/password", credentials),
     onSuccess: (response) => {
       return response;

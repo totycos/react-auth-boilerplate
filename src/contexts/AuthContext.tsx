@@ -3,13 +3,21 @@ import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useContext } from "react";
 
-export const AuthContext = createContext();
+type AuthContextType = {
+  token: string | null;
+  login: (newToken: string) => void;
+  logout: () => void;
+  isAuthenticated: boolean;
+};
 
-export const AuthProvider = ({ children }) => {
+export const AuthContext = createContext<AuthContextType | undefined>(
+  undefined
+);
+
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken] = useState(Cookies.get("auth_token"));
   const navigate = useNavigate();
-  const login = (newToken) => {
-    console.log("newToken:", newToken);
+  const login = (newToken: string) => {
     setToken(newToken);
     Cookies.set("auth_token", newToken);
   };
