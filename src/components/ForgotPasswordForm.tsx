@@ -1,16 +1,25 @@
 import { useForm, SubmitHandler } from "react-hook-form";
 import useForgotPassword from "../hooks/useForgotPassword";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-type ForgotPasswordFormInputs = {
-  email: string;
-};
+const ForgotPasswordFormSchema = z.object({
+  email: z
+    .string()
+    .email({ message: "Invalid email address" })
+    .min(1, { message: "Email can not be empty" }),
+});
+
+type ForgotPasswordForm = z.infer<typeof ForgotPasswordFormSchema>;
 
 const ForgotPasswordForm = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ForgotPasswordFormInputs>();
+  } = useForm<ForgotPasswordForm>({
+    resolver: zodResolver(ForgotPasswordFormSchema),
+  });
   const {
     mutate: forgotPassword,
     isPending,
@@ -18,14 +27,12 @@ const ForgotPasswordForm = () => {
     error,
   } = useForgotPassword();
 
-  const onSubmit: SubmitHandler<ForgotPasswordFormInputs> = async (data) => {
-    const filteredData = {
+  const onSubmit: SubmitHandler<ForgotPasswordForm> = async (data) => {
+    forgotPassword({
       user: {
         email: data.email,
       },
-    };
-
-    forgotPassword(filteredData);
+    });
   };
 
   return (
@@ -33,22 +40,11 @@ const ForgotPasswordForm = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <input
           type="email"
-          {...register("email", {
-            required: true,
-            pattern: {
-              value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-              message: "Invalid email address",
-            },
-          })}
+          {...register("email")}
           placeholder="Email here"
           autoComplete="current-email"
         />
-        {errors.email && errors.email.type === "required" && (
-          <p>Email can not be empty</p>
-        )}
-        {errors.email && errors.email.type === "pattern" && (
-          <p>{errors.email.message}</p>
-        )}
+        {errors.email && <p> {errors.email.message} </p>}
 
         <input type="submit" disabled={isPending} />
       </form>

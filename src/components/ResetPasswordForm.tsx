@@ -1,10 +1,21 @@
 import { SubmitHandler, useForm } from "react-hook-form";
 import useResetPassword from "../hooks/useResetPassword";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-type ResetPasswordFormInputs = {
-  password: string;
-  passwordConfirmation: string;
-};
+const ResetPasswordFormSchema = z
+  .object({
+    password: z
+      .string()
+      .min(6, { message: "Password must be at least 6 characters long" }),
+    passwordConfirmation: z.string(),
+  })
+  .refine((data) => data.password === data.passwordConfirmation, {
+    message: "Passwords do not match",
+    path: ["passwordConfirmation"],
+  });
+
+type ResetPasswordForm = z.infer<typeof ResetPasswordFormSchema>;
 
 const ResetPasswordForm = () => {
   const {
@@ -12,7 +23,9 @@ const ResetPasswordForm = () => {
     handleSubmit,
     formState: { errors },
     getValues,
-  } = useForm<ResetPasswordFormInputs>();
+  } = useForm<ResetPasswordForm>({
+    resolver: zodResolver(ResetPasswordFormSchema),
+  });
   const {
     mutate: resetPassword,
     isPending,
@@ -23,18 +36,16 @@ const ResetPasswordForm = () => {
     "reset_token"
   );
 
-  const onSubmit: SubmitHandler<ResetPasswordFormInputs> = async (data) => {
+  const onSubmit: SubmitHandler<ResetPasswordForm> = async (data) => {
     if (!resetToken) throw new Error("Reset token not found");
 
-    const filteredData = {
+    resetPassword({
       user: {
         reset_password_token: resetToken,
         password: data.password,
         password_confirmation: data.passwordConfirmation,
       },
-    };
-
-    resetPassword(filteredData);
+    });
   };
 
   return (
@@ -49,19 +60,11 @@ const ResetPasswordForm = () => {
           placeholder="Password here"
           autoComplete="current-password"
         />
-        {errors.password && errors.password.type === "required" && (
-          <p>Password can not be empty</p>
-        )}
-        {errors.password && errors.password.type === "minLength" && (
-          <p>Password should have 6 characters minimum</p>
-        )}
+        {errors.password && <p>{errors.password.message}</p>}
 
         <input
           type="password"
-          {...register("passwordConfirmation", {
-            validate: (value) =>
-              value === getValues("password") || "The passwords do not match",
-          })}
+          {...register("passwordConfirmation")}
           placeholder="Confirm Password here"
           autoComplete="current-password"
         />

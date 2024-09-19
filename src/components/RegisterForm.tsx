@@ -3,12 +3,26 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import useRegister from "../hooks/useRegister";
 import { useAuthContext } from "../contexts/AuthContext";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-type RegisterFormInputs = {
-  email: string;
-  password: string;
-  passwordConfirmation: string;
-};
+const RegisterFormSchema = z
+  .object({
+    email: z
+      .string()
+      .email({ message: "Invalid email address" })
+      .min(1, { message: "Email can not be empty" }),
+    password: z
+      .string()
+      .min(6, { message: "Password must be at least 6 characters long" }),
+    passwordConfirmation: z.string(),
+  })
+  .refine((data) => data.password === data.passwordConfirmation, {
+    message: "Passwords do not match",
+    path: ["passwordConfirmation"],
+  });
+
+type RegisterForm = z.infer<typeof RegisterFormSchema>;
 
 const RegisterForm = () => {
   const {
@@ -16,20 +30,20 @@ const RegisterForm = () => {
     handleSubmit,
     getValues,
     formState: { errors },
-  } = useForm<RegisterFormInputs>();
+  } = useForm<RegisterForm>({
+    resolver: zodResolver(RegisterFormSchema),
+  });
   const { mutate: registerUser, isPending, isError, error } = useRegister();
   const { isAuthenticated } = useAuthContext();
   const navigate = useNavigate();
 
-  const onSubmit: SubmitHandler<RegisterFormInputs> = (data) => {
-    const filteredData = {
+  const onSubmit: SubmitHandler<RegisterForm> = (data) => {
+    registerUser({
       user: {
         email: data.email,
         password: data.password,
       },
-    };
-
-    registerUser(filteredData);
+    });
   };
 
   useEffect(() => {
@@ -43,45 +57,23 @@ const RegisterForm = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <input
           type="email"
-          {...register("email", {
-            required: true,
-            pattern: {
-              value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-              message: "Invalid email address",
-            },
-          })}
+          {...register("email")}
           placeholder="Email here"
           autoComplete="current-email"
         />
-        {errors.email && errors.email.type === "required" && (
-          <p>Email can not be empty</p>
-        )}
-        {errors.email && errors.email.type === "pattern" && (
-          <p>{errors.email.message}</p>
-        )}
+        {errors.email && <p>{errors.email.message}</p>}
 
         <input
           type="password"
-          {...register("password", {
-            required: true,
-            minLength: 6,
-          })}
+          {...register("password")}
           placeholder="Password here"
           autoComplete="current-password"
         />
-        {errors.password && errors.password.type === "required" && (
-          <p>Password can not be empty</p>
-        )}
-        {errors.password && errors.password.type === "minLength" && (
-          <p>Password should have 6 characters minimum</p>
-        )}
+        {errors.password && <p>{errors.password.message}</p>}
 
         <input
           type="password"
-          {...register("passwordConfirmation", {
-            validate: (value) =>
-              value === getValues("password") || "The passwords do not match",
-          })}
+          {...register("passwordConfirmation")}
           placeholder="Confirm Password here"
           autoComplete="current-password"
         />
