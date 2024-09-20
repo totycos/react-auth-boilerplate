@@ -13,7 +13,9 @@
     "module": "esnext",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "types": ["vitest", "@types/node"],
+    "typeRoots": ["node_modules/@types", "node_modules/vitest/types"]
   },
   "include": ["src"],
   "exclude": ["node_modules"]

@@ -47,7 +47,7 @@ const LoginForm = () => {
 
   return (
     <div className="loginForm">
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <input
           type="email"
           {...register("email")}
