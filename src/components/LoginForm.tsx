@@ -7,10 +7,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 const LoginFormSchema = z.object({
-  email: z
-    .string()
-    .email({ message: "Invalid email address" })
-    .min(1, { message: "Email can not be empty" }),
+  email: z.string().email({ message: "Invalid email address" }),
   password: z
     .string()
     .min(6, { message: "Password must be at least 6 characters long" }),

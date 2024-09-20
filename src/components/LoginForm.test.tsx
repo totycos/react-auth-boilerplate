@@ -1,7 +1,13 @@
-import { describe, it, expect, beforeAll, vi } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  cleanup,
+} from "@testing-library/react";
 import { MemoryRouter, useNavigate } from "react-router-dom";
-import { AuthContext, AuthProvider } from "../contexts/AuthContext";
+import { AuthContext } from "../contexts/AuthContext";
 import LoginForm from "./LoginForm";
 import useLogin from "../hooks/useLogin";
 
@@ -20,7 +26,10 @@ describe("LoginForm", () => {
   const mockLoginUser = vi.fn();
   const mockNavigate = vi.fn();
 
-  beforeAll(() => {
+  beforeEach(() => {
+    cleanup();
+    vi.clearAllMocks();
+
     (useLogin as vi.Mock).mockReturnValue({
       mutate: mockLoginUser,
       isPending: false,
@@ -92,26 +101,4 @@ describe("LoginForm", () => {
       })
     );
   });
-
-  // it("redirects after successful login", async () => {
-  //   // Simuler la réussite de la mutation
-  //   mockLoginUser.mockImplementationOnce(() => {
-  //     return new Promise((resolve) => {
-  //       resolve({ headers: { authorization: "mock-token" } });
-  //     });
-  //   });
-
-  //   fireEvent.change(screen.getByPlaceholderText("Email here"), {
-  //     target: { value: "test@example.com" },
-  //   });
-  //   fireEvent.change(screen.getByPlaceholderText("Password here"), {
-  //     target: { value: "password123" },
-  //   });
-
-  //   fireEvent.click(screen.getByRole("button"));
-
-  //   await waitFor(() => {
-  //     expect(mockNavigate).toHaveBeenCalledWith("/");
-  //   });
-  // });
 });

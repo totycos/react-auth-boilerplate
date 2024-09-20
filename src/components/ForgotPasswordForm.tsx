@@ -4,10 +4,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 const ForgotPasswordFormSchema = z.object({
-  email: z
-    .string()
-    .email({ message: "Invalid email address" })
-    .min(1, { message: "Email can not be empty" }),
+  email: z.string().email({ message: "Invalid email address" }),
 });
 
 type ForgotPasswordForm = z.infer<typeof ForgotPasswordFormSchema>;
@@ -37,7 +34,7 @@ const ForgotPasswordForm = () => {
 
   return (
     <div className="loginForm">
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <input
           type="email"
           {...register("email")}
