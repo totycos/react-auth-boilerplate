@@ -1,20 +1,20 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   render,
   screen,
   fireEvent,
   waitFor,
   cleanup,
-} from "@testing-library/react";
-import { MemoryRouter, useNavigate } from "react-router-dom";
-import { AuthContext } from "../contexts/AuthContext";
-import LoginForm from "./LoginForm";
-import useLogin from "../hooks/useLogin";
+} from '@testing-library/react';
+import { MemoryRouter, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../contexts/AuthContext';
+import LoginForm from './LoginForm';
+import useLogin from '../hooks/useLogin';
 
-vi.mock("../hooks/useLogin");
-vi.mock("react-router-dom", async (importOriginal) => {
+vi.mock('../hooks/useLogin');
+vi.mock('react-router-dom', async (importOriginal) => {
   const actual = await importOriginal();
-  const actualModule = actual as typeof import("react-router-dom");
+  const actualModule = actual as typeof import('react-router-dom');
   return {
     ...actualModule,
     MemoryRouter: vi.fn(({ children }) => <div>{children}</div>),
@@ -22,7 +22,7 @@ vi.mock("react-router-dom", async (importOriginal) => {
   };
 });
 
-describe("LoginForm", () => {
+describe('LoginForm', () => {
   const mockLoginUser = vi.fn();
   const mockNavigate = vi.fn();
 
@@ -30,14 +30,14 @@ describe("LoginForm", () => {
     cleanup();
     vi.clearAllMocks();
 
-    (useLogin as vi.Mock).mockReturnValue({
+    (useLogin as ReturnType<typeof vi.fn>).mockReturnValue({
       mutate: mockLoginUser,
       isPending: false,
       isError: false,
       error: null,
     });
 
-    (useNavigate as vi.Mock).mockReturnValue(mockNavigate);
+    (useNavigate as ReturnType<typeof vi.fn>).mockReturnValue(mockNavigate);
 
     render(
       <MemoryRouter>
@@ -55,25 +55,25 @@ describe("LoginForm", () => {
     );
   });
 
-  it("displays login form", () => {
-    expect(screen.getByPlaceholderText("Email here")).toBeTruthy();
-    expect(screen.getByPlaceholderText("Password here")).toBeTruthy();
+  it('displays login form', () => {
+    expect(screen.getByPlaceholderText('Email here')).toBeTruthy();
+    expect(screen.getByPlaceholderText('Password here')).toBeTruthy();
   });
 
-  it("displays error messages for invalid inputs", async () => {
-    fireEvent.change(screen.getByPlaceholderText("Email here"), {
-      target: { value: "invalid-email" },
+  it('displays error messages for invalid inputs', async () => {
+    fireEvent.change(screen.getByPlaceholderText('Email here'), {
+      target: { value: 'invalid-email' },
     });
 
-    fireEvent.change(screen.getByPlaceholderText("Password here"), {
-      target: { value: "123" },
+    fireEvent.change(screen.getByPlaceholderText('Password here'), {
+      target: { value: '123' },
     });
 
-    fireEvent.click(screen.getByRole("button"));
+    fireEvent.click(screen.getByRole('button'));
 
-    const emailError = await screen.findByText("Invalid email address");
+    const emailError = await screen.findByText('Invalid email address');
     const passwordError = await screen.findByText(
-      "Password must be at least 6 characters long"
+      'Password must be at least 6 characters long'
     );
 
     expect(emailError).toBeTruthy();
@@ -82,21 +82,21 @@ describe("LoginForm", () => {
     expect(mockLoginUser).not.toHaveBeenCalled();
   });
 
-  it("submits form with the right data", async () => {
-    fireEvent.change(screen.getByPlaceholderText("Email here"), {
-      target: { value: "test@example.com" },
+  it('submits form with the right data', async () => {
+    fireEvent.change(screen.getByPlaceholderText('Email here'), {
+      target: { value: 'test@example.com' },
     });
-    fireEvent.change(screen.getByPlaceholderText("Password here"), {
-      target: { value: "password123" },
+    fireEvent.change(screen.getByPlaceholderText('Password here'), {
+      target: { value: 'password123' },
     });
 
-    fireEvent.click(screen.getByRole("button"));
+    fireEvent.click(screen.getByRole('button'));
 
     await waitFor(() =>
       expect(mockLoginUser).toHaveBeenCalledWith({
         user: {
-          email: "test@example.com",
-          password: "password123",
+          email: 'test@example.com',
+          password: 'password123',
         },
       })
     );
