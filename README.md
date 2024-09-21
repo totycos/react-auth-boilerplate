@@ -6,7 +6,7 @@
 
 This is a boilerplate project for a modern web application, built with React, TypeScript, and Vitest. It provides a solid foundation for building scalable and maintainable applications.
 
-## Features
+## ⚙️ Features
 
 ---
 
@@ -20,7 +20,7 @@ This is a boilerplate project for a modern web application, built with React, Ty
 - ESLint and Prettier for consistent code formatting and linting
 - Vitest for unit testing
 
-## Getting started
+## 🕹 Getting started
 
 ---
 
@@ -41,7 +41,7 @@ Data models: You may need to update the data models in to match your backend's d
 
 Don't forget to update schemas and types too.
 
-## Contributing
+## 🤗 Contributing
 
 ---
 
