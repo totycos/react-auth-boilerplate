@@ -26,14 +26,19 @@ This is a boilerplate project for a modern web application, built with React, Ty
 
 1. Install dependencies: `npm install` or `yarn instal`
 2. Start the development server: `npm start` or `yarn start`
+
 3. Adapting to a Different Backend :
 
 This boilerplate uses a specific backend API, but you can easily adapt it to work with a different backend. Here's what you need to do:
 
 Data to transmit: The backend API expects a specific data format for requests and responses. You'll need to update the `axiosInstance` in `src/utils/axiosInstance.ts` to match your backend's API format.
+
 Environment variables: You'll need to update the `VITE_API_URL` environment variable in `.env` to point to your backend API URL.
+
 API endpoints: You'll need to update the API endpoints in `src/hooks/useLogin.tsx` and other API-related files to match your backend's API endpoints.
+
 Data models: You may need to update the data models in to match your backend's data format.
+
 Don't forget to update schemas and types too.
 
 ## Contributing
